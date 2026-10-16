@@ -87,7 +87,7 @@ export default function HomePage() {
 
             {/* Plain, Clean Website Description (Crisp black in bright theme) */}
             <p className="text-sm sm:text-base md:text-lg text-neutral-800 dark:text-neutral-200 leading-relaxed max-w-xl font-normal">
-              TenMinRabbitHole is a cognitive sprint designed to break passive consumption. Roll the dice to lock in a random seed topic across science, computing, or philosophy. For ten uninterrupted minutes, research offline on physical paper. When the timer hits zero, explain the concept simply from memory—and let the community rate your clarity from 1 to 10.
+              JustLearn is a cognitive sprint designed to break passive consumption. Roll the dice to lock in a random seed topic across science, computing, or philosophy. For ten uninterrupted minutes, research offline on physical paper. When the timer hits zero, explain the concept simply from memory—and let the community rate your clarity from 1 to 10.
             </p>
 
             {/* Plain Minimalist Tags */}

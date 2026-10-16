@@ -1,15 +1,15 @@
-# TenMinRabbitHole
+# JustLearn
 
 A focused cognitive sprint that pairs the Pomodoro protocol with the Feynman learning technique.
 
 ---
 
-## Why TenMinRabbitHole?
+## Why JustLearn?
 
 The modern internet encourages endless passive skimming. We bookmark articles we never read, scroll through technical threads without retaining core concepts, and mistake recognition for understanding.
 
-TenMinRabbitHole creates an intentional constraint to counter digital distraction:
-- **10-Minute Hard Stop**: A dedicated countdown that forces focus. There is no time to get lost in infinite rabbit holes or tabs.
+JustLearn creates an intentional constraint to counter digital distraction:
+- **10-Minute Hard Stop**: A dedicated countdown that forces focus. There is no time to get lost in infinite tabs.
 - **Physical Paper Synthesis**: You are encouraged to close digital editors and write or sketch your notes on physical paper or a notebook. Handwriting activates deeper motor memory and forces immediate distillation.
 - **The Feynman Technique**: When the 10-minute timer expires, the digital summary box unlocks. Looking only at your paper notes, you must explain the concept simply from memory. If you cannot explain it simply, you do not understand it well enough.
 - **1 to 10 Peer Consensus**: The community reads your memory synthesis and awards marks from 1 to 10 based on clarity, intuition, and depth.
@@ -35,6 +35,7 @@ TenMinRabbitHole creates an intentional constraint to counter digital distractio
 - **Community Feed & Real-Time Voting**: Browse syntheses, filter by category or newest/top-rated, and vote 1 to 10 with duplicate vote prevention.
 - **Physical Paper Note Inspection**: Upload and inspect handwritten notes via an inline lightbox viewer.
 - **Competitive Leaderboard**: Tracks total points, syntheses count, paper note uploads, and peer scores.
+- **Deep Dive Guide**: In-depth explanation of the cognitive protocol and the Feynman method.
 - **Hybrid Data Layer**: Seamlessly connects to Supabase PostgreSQL when credentials are provided, or operates zero-config via local storage offline.
 
 ---
@@ -50,8 +51,8 @@ TenMinRabbitHole creates an intentional constraint to counter digital distractio
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/nAItiklearn/TenMinRabbitHole.git
-   cd TenMinRabbitHole
+   git clone https://github.com/nAItiklearn/JustLearn.git
+   cd JustLearn
    ```
 
 2. Install dependencies:

@@ -10,7 +10,7 @@ export function Navbar() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: "/", label: "Deep Dive" },
+    { href: "/deep-dive", label: "Deep Dive" },
     { href: "/community", label: "Community" },
     { href: "/leaderboard", label: "Leaderboard" },
     { href: "/profile", label: "Profile" },
@@ -31,7 +31,7 @@ export function Navbar() {
               <span className="absolute -inset-1 rounded-full border border-amber-400/20" />
             </div>
             <span className="text-xs sm:text-sm tracking-[0.18em] uppercase font-semibold text-neutral-900 dark:text-white transition-colors">
-              TenMin<span className="text-amber-500 font-normal">Hole</span>
+              Just<span className="text-amber-500 font-normal">Learn</span>
             </span>
           </Link>
         </div>

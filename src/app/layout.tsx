@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "TenMinRabbitHole — 10-Minute Curiosity Sprints & Feynman Synthesis",
+  title: "JustLearn — 10 Minute Curiosity Sprints & Feynman Synthesis",
   description: "A minimalist cognitive sprint. 10 minutes on physical paper. Synthesize from memory. Rated 1 to 10 by peers.",
 };
 

@@ -29,7 +29,7 @@ export function ResearchTimer({
 
   useEffect(() => {
     if (typeof document !== "undefined") {
-      originalTitleRef.current = document.title || "TenMinRabbitHole";
+      originalTitleRef.current = document.title || "JustLearn";
     }
   }, []);
 
