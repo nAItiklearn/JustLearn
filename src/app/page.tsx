@@ -72,21 +72,21 @@ export default function HomePage() {
           {/* RIGHT: DESCRIPTION OF THE WEBSITE */}
           <div className="md:col-span-7 flex flex-col items-start text-left space-y-5 sm:space-y-6">
             {/* Plain Eyebrow Tag */}
-            <div className="flex items-center space-x-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+            <div className="flex items-center space-x-2 text-xs font-semibold text-neutral-700 dark:text-neutral-400">
               <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
               <span>Feynman Technique × Pomodoro</span>
             </div>
 
-            {/* Plain, Clean Headline */}
-            <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-neutral-900 dark:text-white leading-tight">
+            {/* Plain, Clean Headline (Black in bright theme, White in night theme) */}
+            <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-black dark:text-white leading-tight">
               Ten minutes on paper. <br />
-              <span className="font-normal text-neutral-600 dark:text-neutral-300">
+              <span className="font-medium text-neutral-800 dark:text-neutral-200">
                 Synthesize from memory.
               </span>
             </h1>
 
-            {/* Plain, Clean Website Description */}
-            <p className="text-sm sm:text-base md:text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed max-w-xl font-light">
+            {/* Plain, Clean Website Description (Crisp black in bright theme) */}
+            <p className="text-sm sm:text-base md:text-lg text-neutral-800 dark:text-neutral-200 leading-relaxed max-w-xl font-normal">
               TenMinRabbitHole is a cognitive sprint designed to break passive consumption. Roll the dice to lock in a random seed topic across science, computing, or philosophy. For ten uninterrupted minutes, research offline on physical paper. When the timer hits zero, explain the concept simply from memory—and let the community rate your clarity from 1 to 10.
             </p>
 

@@ -17,7 +17,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-black/[0.06] dark:border-white/[0.08] bg-white/70 dark:bg-black/70 backdrop-blur-md transition-colors duration-300">
+    <header className="sticky top-0 z-50 w-full bg-transparent transition-colors duration-300">
       <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-4 sm:px-8 lg:px-12">
         {/* Top Left: Moon Symbol (Theme Toggle) + Brand Logo */}
         <div className="flex items-center space-x-2 sm:space-x-3">
@@ -36,7 +36,7 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Text Navigation Links */}
+        {/* Text Navigation Links (transparent bar, black text in light, white in dark) */}
         <nav className="flex items-center space-x-4 sm:space-x-8">
           {navLinks.map(({ href, label }) => {
             const isActive = pathname === href;
@@ -47,7 +47,7 @@ export function Navbar() {
                 className={`text-xs sm:text-sm tracking-tight transition-colors duration-150 py-1 ${
                   isActive
                     ? "text-neutral-950 dark:text-white font-semibold underline underline-offset-8 decoration-amber-400 decoration-2"
-                    : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white font-normal"
+                    : "text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white font-medium"
                 }`}
               >
                 {label}
@@ -60,10 +60,10 @@ export function Navbar() {
         <div className="hidden md:flex items-center">
           <Link
             href="/"
-            className="group flex items-center space-x-2 rounded-full border border-black/10 dark:border-white/15 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3.5 py-1.5 text-xs font-medium text-neutral-900 dark:text-white transition-all shadow-xs"
+            className="group flex items-center space-x-2 rounded-full border border-black/15 dark:border-white/20 bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 hover:bg-black dark:hover:bg-neutral-100 px-3.5 py-1.5 text-xs font-medium transition-all shadow-xs"
           >
             <span>Roll Topic</span>
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-400 text-neutral-950 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
               <ArrowUpRight className="h-3 w-3 stroke-[2.5]" />
             </span>
           </Link>

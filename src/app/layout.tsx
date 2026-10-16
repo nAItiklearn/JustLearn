@@ -23,30 +23,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} h-full`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} h-full`} data-theme="light" suppressHydrationWarning>
       <head>
-        {/* Anti-FOUC script for instant night theme */}
+        {/* Anti-FOUC script for instant theme synchronization */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                if (localStorage.getItem('tmrh_theme') === 'dark') {
+                const saved = localStorage.getItem('tmrh_theme');
+                if (saved === 'dark') {
                   document.documentElement.classList.add('dark');
+                  document.documentElement.setAttribute('data-theme', 'dark');
                 } else {
                   document.documentElement.classList.remove('dark');
+                  document.documentElement.setAttribute('data-theme', 'light');
                 }
               } catch (_) {}
             `,
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col relative antialiased font-sans selection:bg-amber-200 selection:text-neutral-900 dark:selection:bg-neutral-800 dark:selection:text-white transition-colors duration-300">
+      <body className="min-h-full flex flex-col relative antialiased font-sans text-neutral-900 dark:text-white transition-colors duration-300">
         {/* Visible theme gradient background */}
         <div
           className="pointer-events-none fixed inset-0 -z-10 overflow-hidden transition-all duration-500"
           style={{
-            backgroundImage: "var(--bg-gradient)",
             backgroundColor: "var(--bg-color)",
+            backgroundImage: "var(--bg-gradient)",
           }}
           aria-hidden="true"
         />
@@ -54,7 +57,7 @@ export default function RootLayout({
         {/* Gradual blur top bar */}
         <GradualBlur />
 
-        {/* Minimalist Navigation with top-left Theme Toggle */}
+        {/* Minimalist Transparent Navigation with top-left Theme Toggle */}
         <Navbar />
 
         {/* Main Content Area */}
