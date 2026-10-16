@@ -63,3 +63,15 @@ body {
 .animate-dice-fast {
   animation: rollDiceFast 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
 }
+
+/* Hide Next.js Dev Tools / Overlays from user view */
+nextjs-portal,
+[data-nextjs-dev-tools-button],
+#nextjs-dev-tools-portal,
+[data-nextjs-route-announcer],
+[data-nextjs-toast] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

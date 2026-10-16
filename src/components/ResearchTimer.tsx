@@ -144,15 +144,6 @@ export function ResearchTimer({
               <span>Reset</span>
             </button>
           </div>
-
-          {/* Dev Skip */}
-          <button
-            onClick={handleCompletion}
-            className="flex items-center space-x-1 text-[11px] text-neutral-400 dark:text-neutral-500 hover:text-amber-600 dark:hover:text-amber-400 font-mono tracking-wider transition-colors pt-1 cursor-pointer"
-          >
-            <span>[Dev: Fast-Forward to 00:00]</span>
-            <ArrowRight className="h-3 w-3" />
-          </button>
         </div>
       </div>
 

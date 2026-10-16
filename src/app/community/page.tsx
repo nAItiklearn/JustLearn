@@ -259,11 +259,11 @@ export default function CommunityPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-1.5 rounded-full border border-amber-300 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-950/40 px-3 py-1 text-xs text-amber-900 dark:text-amber-300 font-mono">
-                  <span className="font-semibold text-neutral-900 dark:text-white">
+                <div className="flex items-center space-x-1.5 rounded-full border border-amber-300 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-950/40 px-3 py-1 text-xs text-amber-900 dark:text-amber-300">
+                  <span className="font-bold text-neutral-900 dark:text-white">
                     {summary.average_score > 0 ? summary.average_score.toFixed(1) : "—"}
                   </span>
-                  <span className="text-neutral-400 dark:text-neutral-500">/10 ({summary.ratings_count})</span>
+                  <span className="text-neutral-500 dark:text-neutral-400 font-semibold">/10 ({summary.ratings_count})</span>
                 </div>
               </div>
 
@@ -271,17 +271,28 @@ export default function CommunityPage() {
                 {summary.content}
               </p>
 
-              {/* Physical Paper Note Attachment */}
+              {/* Physical Paper Note Attachment Image Preview */}
               {summary.paper_note_image_url && (
-                <div className="pt-1">
-                  <button
-                    type="button"
+                <div className="pt-2">
+                  <div
                     onClick={() => setSelectedImage(summary.paper_note_image_url || null)}
-                    className="inline-flex items-center space-x-2 rounded-xl border border-amber-300/80 dark:border-amber-500/30 bg-amber-50/80 dark:bg-amber-950/30 px-3 py-1.5 text-xs font-mono text-amber-900 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors cursor-pointer"
+                    className="group relative cursor-pointer overflow-hidden rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-neutral-800 transition-all hover:border-amber-400 max-w-md"
                   >
-                    <span>📸</span>
-                    <span>View Physical Paper / Journal Notes</span>
-                  </button>
+                    <div className="relative h-48 sm:h-60 w-full overflow-hidden bg-neutral-900">
+                      <img
+                        src={summary.paper_note_image_url}
+                        alt="Physical paper research notes"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between rounded-xl bg-black/75 px-3 py-1.5 backdrop-blur-md text-[11px] text-white">
+                      <span className="flex items-center space-x-1.5 font-medium">
+                        <span>📝</span>
+                        <span>Physical Paper / Journal Notes</span>
+                      </span>
+                      <span className="text-amber-300 font-mono text-[10px]">Click to inspect ↗</span>
+                    </div>
+                  </div>
                 </div>
               )}
 

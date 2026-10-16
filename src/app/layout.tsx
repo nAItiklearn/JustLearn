@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { GradualBlur } from "@/components/GradualBlur";
+import { NameLockModal } from "@/components/NameLockModal";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -59,6 +60,9 @@ export default function RootLayout({
 
         {/* Minimalist Transparent Navigation with top-left Theme Toggle */}
         <Navbar />
+
+        {/* First-time Permanent Name Lock Modal */}
+        <NameLockModal />
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col">{children}</div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { getUserHandle, saveUserHandle } from "@/lib/user";
+import { getUserHandle } from "@/lib/user";
 import { ArrowUpRight, Lock, Image as ImageIcon, X, Upload } from "lucide-react";
 
 interface SummaryEditorProps {
@@ -70,8 +70,7 @@ export function SummaryEditor({
       return;
     }
 
-    const cleanHandle = authorName.trim() || getUserHandle();
-    saveUserHandle(cleanHandle);
+    const cleanHandle = authorName.trim() || getUserHandle() || "learner";
 
     try {
       setIsSubmitting(true);
@@ -123,18 +122,12 @@ export function SummaryEditor({
       </div>
 
       <form onSubmit={handlePublish} className="mt-6 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-          <label className="text-xs font-light text-neutral-500 dark:text-neutral-400 shrink-0">
-            Author Handle:
-          </label>
-          <input
-            type="text"
-            value={authorName}
-            onChange={(e) => setAuthorName(e.target.value)}
-            placeholder="handle"
-            className="w-full sm:w-48 rounded-xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-neutral-800 px-3.5 py-1.5 text-xs text-neutral-900 dark:text-white placeholder-neutral-400 focus:border-amber-400 focus:outline-none"
-            required
-          />
+        <div className="flex items-center space-x-2 text-xs">
+          <span className="font-bold text-neutral-900 dark:text-white">Publishing as:</span>
+          <span className="font-bold text-amber-700 dark:text-amber-400">@{authorName || "learner"}</span>
+          <span className="rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 px-2.5 py-0.5 text-[10px] text-neutral-600 dark:text-neutral-400 font-bold">
+            Locked Identity
+          </span>
         </div>
 
         <textarea

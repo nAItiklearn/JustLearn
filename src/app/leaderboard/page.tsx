@@ -152,22 +152,22 @@ export default function LeaderboardPage() {
 
       {/* Point Rules Card */}
       <div className="rounded-3xl border border-amber-300/80 dark:border-amber-500/30 bg-amber-50/70 dark:bg-amber-950/20 p-5 sm:p-6 text-xs text-neutral-700 dark:text-neutral-300">
-        <div className="flex items-center space-x-2 font-mono text-amber-800 dark:text-amber-300 font-semibold uppercase tracking-wider mb-2">
+        <div className="flex items-center space-x-2 text-amber-800 dark:text-amber-300 font-bold uppercase tracking-wider mb-2">
           <Sparkles className="h-4 w-4" />
           <span>Point Breakdown</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono pt-1 text-[11px] sm:text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 text-xs">
           <div className="bg-white/80 dark:bg-neutral-900/60 p-2.5 rounded-xl border border-amber-200 dark:border-white/10">
-            <span className="text-amber-600 dark:text-amber-400 font-bold">+50 pts</span> per Published Synthesis
+            <span className="text-amber-700 dark:text-amber-400 font-bold">+50 pts</span> per Published Synthesis
           </div>
           <div className="bg-white/80 dark:bg-neutral-900/60 p-2.5 rounded-xl border border-amber-200 dark:border-white/10">
-            <span className="text-amber-600 dark:text-amber-400 font-bold">+25 pts</span> per Paper Notes Photo
+            <span className="text-amber-700 dark:text-amber-400 font-bold">+25 pts</span> per Paper Notes Photo
           </div>
           <div className="bg-white/80 dark:bg-neutral-900/60 p-2.5 rounded-xl border border-amber-200 dark:border-white/10">
-            <span className="text-amber-600 dark:text-amber-400 font-bold">+10 pts</span> per Peer Vote Received
+            <span className="text-amber-700 dark:text-amber-400 font-bold">+10 pts</span> per Peer Vote Received
           </div>
           <div className="bg-white/80 dark:bg-neutral-900/60 p-2.5 rounded-xl border border-amber-200 dark:border-white/10">
-            <span className="text-amber-600 dark:text-amber-400 font-bold">1–100 pts</span> Clarity Rating Bonus
+            <span className="text-amber-700 dark:text-amber-400 font-bold">1–100 pts</span> Clarity Rating Bonus
           </div>
         </div>
       </div>
@@ -212,17 +212,17 @@ export default function LeaderboardPage() {
           {/* #2 Rank */}
           <div className="rounded-3xl border border-neutral-200 dark:border-white/10 bg-white/90 dark:bg-neutral-900/90 p-6 text-center order-2 md:order-1 flex flex-col justify-between">
             <div>
-              <div className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-slate-300 font-bold font-mono text-xs mb-3">
+              <div className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-slate-300 font-bold text-xs mb-3">
                 #2
               </div>
-              <h3 className="text-lg font-medium text-neutral-900 dark:text-white">
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
                 @{sortedUsers[1].handle}
               </h3>
-              <p className="text-2xl font-light text-neutral-900 dark:text-white font-mono mt-2">
-                {sortedUsers[1].totalPoints} <span className="text-xs text-neutral-400 font-sans">pts</span>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white mt-2">
+                {sortedUsers[1].totalPoints} <span className="text-xs text-neutral-500 font-bold">pts</span>
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-white/10 text-xs text-neutral-500 dark:text-neutral-400 flex justify-around font-mono">
+            <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-white/10 text-xs font-semibold text-neutral-600 dark:text-neutral-400 flex justify-around">
               <span>{sortedUsers[1].synthesesCount} posts</span>
               <span>•</span>
               <span>{sortedUsers[1].averageScore}/10 avg</span>
@@ -232,17 +232,17 @@ export default function LeaderboardPage() {
           {/* #1 Rank (Crown / Gold) */}
           <div className="rounded-3xl border-2 border-amber-400 dark:border-amber-400/80 bg-gradient-to-b from-amber-50/90 to-white dark:from-amber-950/40 dark:to-neutral-900/95 p-7 text-center order-1 md:order-2 shadow-lg shadow-amber-500/10 flex flex-col justify-between scale-102">
             <div>
-              <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-amber-400 text-neutral-950 font-bold font-mono text-sm mb-3 shadow-sm">
+              <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-amber-400 text-neutral-950 font-bold text-sm mb-3 shadow-sm">
                 #1
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-white">
+              <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
                 @{sortedUsers[0].handle}
               </h3>
-              <p className="text-3xl font-light text-neutral-900 dark:text-white font-mono mt-2">
-                {sortedUsers[0].totalPoints} <span className="text-xs text-amber-600 dark:text-amber-400 font-sans font-medium">pts</span>
+              <p className="text-3xl font-bold text-neutral-900 dark:text-white mt-2">
+                {sortedUsers[0].totalPoints} <span className="text-xs text-amber-700 dark:text-amber-400 font-bold">pts</span>
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t border-amber-200 dark:border-white/10 text-xs text-neutral-600 dark:text-neutral-300 flex justify-around font-mono">
+            <div className="mt-4 pt-3 border-t border-amber-200 dark:border-white/10 text-xs font-semibold text-neutral-700 dark:text-neutral-300 flex justify-around">
               <span>{sortedUsers[0].synthesesCount} posts</span>
               <span>•</span>
               <span>{sortedUsers[0].averageScore}/10 avg</span>
@@ -254,17 +254,17 @@ export default function LeaderboardPage() {
           {/* #3 Rank */}
           <div className="rounded-3xl border border-neutral-200 dark:border-white/10 bg-white/90 dark:bg-neutral-900/90 p-6 text-center order-3 md:order-3 flex flex-col justify-between">
             <div>
-              <div className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-amber-100 dark:bg-neutral-800 text-amber-800 dark:text-amber-400 font-bold font-mono text-xs mb-3">
+              <div className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-amber-100 dark:bg-neutral-800 text-amber-900 dark:text-amber-400 font-bold text-xs mb-3">
                 #3
               </div>
-              <h3 className="text-lg font-medium text-neutral-900 dark:text-white">
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
                 @{sortedUsers[2].handle}
               </h3>
-              <p className="text-2xl font-light text-neutral-900 dark:text-white font-mono mt-2">
-                {sortedUsers[2].totalPoints} <span className="text-xs text-neutral-400 font-sans">pts</span>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white mt-2">
+                {sortedUsers[2].totalPoints} <span className="text-xs text-neutral-500 font-bold">pts</span>
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-white/10 text-xs text-neutral-500 dark:text-neutral-400 flex justify-around font-mono">
+            <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-white/10 text-xs font-semibold text-neutral-600 dark:text-neutral-400 flex justify-around">
               <span>{sortedUsers[2].synthesesCount} posts</span>
               <span>•</span>
               <span>{sortedUsers[2].averageScore}/10 avg</span>
@@ -278,7 +278,7 @@ export default function LeaderboardPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs sm:text-sm">
             <thead>
-              <tr className="border-b border-neutral-100 dark:border-white/10 text-neutral-400 dark:text-neutral-500 font-mono uppercase text-[11px]">
+              <tr className="border-b border-neutral-200 dark:border-white/10 text-neutral-500 dark:text-neutral-400 font-bold uppercase text-[11px]">
                 <th className="py-4 px-4 sm:px-6">Rank</th>
                 <th className="py-4 px-4 sm:px-6">Learner</th>
                 <th className="py-4 px-4 sm:px-6 text-right">Points</th>
@@ -287,10 +287,10 @@ export default function LeaderboardPage() {
                 <th className="py-4 px-4 sm:px-6 text-right">Avg Rating</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100 dark:divide-white/5 font-light">
+            <tbody className="divide-y divide-neutral-100 dark:divide-white/5 font-normal">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-neutral-400">
+                  <td colSpan={6} className="py-12 text-center text-neutral-500 font-bold">
                     Calculating leaderboard standings...
                   </td>
                 </tr>
@@ -302,38 +302,38 @@ export default function LeaderboardPage() {
                       key={user.handle}
                       className={`transition-colors ${
                         isCurrent
-                          ? "bg-amber-50/70 dark:bg-amber-950/20 font-medium"
+                          ? "bg-amber-50/70 dark:bg-amber-950/20 font-bold"
                           : "hover:bg-neutral-50 dark:hover:bg-neutral-800/40"
                       }`}
                     >
-                      <td className="py-3.5 px-4 sm:px-6 font-mono font-semibold text-neutral-500 dark:text-neutral-400">
+                      <td className="py-3.5 px-4 sm:px-6 font-bold text-neutral-700 dark:text-neutral-300">
                         {user.rank === 1 ? "🥇" : user.rank === 2 ? "🥈" : user.rank === 3 ? "🥉" : `#${user.rank}`}
                       </td>
                       <td className="py-3.5 px-4 sm:px-6 text-neutral-900 dark:text-white">
                         <div className="flex items-center space-x-2">
-                          <span className="font-medium">@{user.handle}</span>
+                          <span className="font-bold">@{user.handle}</span>
                           {isCurrent && (
-                            <span className="text-[10px] font-mono bg-amber-400 text-neutral-950 px-2 py-0.5 rounded-full font-bold">
+                            <span className="text-[10px] bg-amber-400 text-neutral-950 px-2 py-0.5 rounded-full font-bold">
                               You
                             </span>
                           )}
                           {user.paperNotesCount > 0 && (
-                            <span className="text-[10px] font-mono text-neutral-400" title={`${user.paperNotesCount} physical notes uploaded`}>
-                              📸 {user.paperNotesCount}
+                            <span className="text-[11px] text-neutral-500 font-bold" title={`${user.paperNotesCount} physical notes uploaded`}>
+                              📝 {user.paperNotesCount}
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 sm:px-6 text-right font-mono font-semibold text-neutral-900 dark:text-white">
+                      <td className="py-3.5 px-4 sm:px-6 text-right font-bold text-neutral-900 dark:text-white">
                         {user.totalPoints}
                       </td>
-                      <td className="py-3.5 px-4 sm:px-6 text-right font-mono text-neutral-600 dark:text-neutral-400 hidden sm:table-cell">
+                      <td className="py-3.5 px-4 sm:px-6 text-right font-semibold text-neutral-700 dark:text-neutral-300 hidden sm:table-cell">
                         {user.synthesesCount}
                       </td>
-                      <td className="py-3.5 px-4 sm:px-6 text-right font-mono text-neutral-600 dark:text-neutral-400 hidden sm:table-cell">
+                      <td className="py-3.5 px-4 sm:px-6 text-right font-semibold text-neutral-700 dark:text-neutral-300 hidden sm:table-cell">
                         {user.ratingsReceived}
                       </td>
-                      <td className="py-3.5 px-4 sm:px-6 text-right font-mono text-amber-700 dark:text-amber-400 font-medium">
+                      <td className="py-3.5 px-4 sm:px-6 text-right font-bold text-amber-700 dark:text-amber-400">
                         {user.averageScore > 0 ? user.averageScore.toFixed(1) : "—"}/10
                       </td>
                     </tr>
