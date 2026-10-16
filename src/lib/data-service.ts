@@ -1,10 +1,10 @@
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
-import { Topic, Summary, Rating } from "@/types/database";
+import { Topic, Summary } from "@/types/database";
 import { SEED_TOPICS, INITIAL_COMMUNITY_SUMMARIES } from "@/data/seed-topics";
 import { getOrCreateUserId } from "@/lib/user";
 
-const LOCAL_SUMMARIES_KEY = "tmrh_local_summaries";
-const LOCAL_RATINGS_KEY = "tmrh_local_ratings";
+const LOCAL_SUMMARIES_KEY = "justlearn_local_summaries";
+const LOCAL_RATINGS_KEY = "justlearn_local_ratings";
 
 function getLocalSummaries(): Summary[] {
   if (typeof window === "undefined") return INITIAL_COMMUNITY_SUMMARIES;
@@ -26,7 +26,6 @@ function saveLocalSummaries(summaries: Summary[]): void {
 }
 
 function getLocalRatings(): Record<string, number> {
-  // Map of summary_id -> score for current voter
   if (typeof window === "undefined") return {};
   try {
     const raw = localStorage.getItem(LOCAL_RATINGS_KEY);
@@ -68,71 +67,29 @@ export async function fetchSummaries(params: {
   category?: string;
   topicId?: string;
 }): Promise<Summary[]> {
-  const currentUserId = getOrCreateUserId();
+  const localVotes = getLocalRatings();
+  let summaries: Summary[] = [];
 
-  if (isSupabaseConfigured()) {
-    const supabase = createClient();
-    if (supabase) {
-      try {
-        let query = supabase.from("summaries").select("*");
-
-        if (params.topicId) {
-          query = query.eq("topic_id", params.topicId);
-        }
-
-        if (params.sort === "top") {
-          query = query.order("average_score", { ascending: false }).order("ratings_count", { ascending: false });
-        } else {
-          query = query.order("created_at", { ascending: false });
-        }
-
-        const { data, error } = await query;
-        if (!error && data) {
-          // Also fetch user's own ratings to highlight them
-          const summaryIds = data.map((s) => s.id);
-          let userRatingsMap: Record<string, number> = {};
-
-          if (summaryIds.length > 0) {
-            const { data: userRatings } = await supabase
-              .from("ratings")
-              .select("summary_id, score")
-              .eq("voter_id", currentUserId)
-              .in("summary_id", summaryIds);
-
-            if (userRatings) {
-              userRatings.forEach((r: { summary_id: string; score: number }) => {
-                userRatingsMap[r.summary_id] = r.score;
-              });
-            }
-          }
-
-          let items: Summary[] = data.map((item) => ({
-            ...item,
-            average_score: Number(item.average_score) || 0,
-            ratings_count: Number(item.ratings_count) || 0,
-            user_rating: userRatingsMap[item.id] || null,
-          }));
-
-          // Client-side category filtering if topic is matched
-          if (params.category && params.category !== "All") {
-            const topicCategoryMap = new Map(SEED_TOPICS.map((t) => [t.id, t.category]));
-            items = items.filter((item) => {
-              const cat = topicCategoryMap.get(item.topic_id);
-              return cat === params.category;
-            });
-          }
-
-          return items;
-        }
-      } catch (err) {
-        console.warn("Supabase fetch summaries failed, falling back to local storage:", err);
+  // 1. Try our live centralized cloud API
+  try {
+    const res = await fetch("/api/summaries", { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.summaries && Array.isArray(data.summaries)) {
+        summaries = data.summaries;
+        saveLocalSummaries(summaries);
       }
     }
+  } catch {
+    // Fall back to local cache
+    summaries = getLocalSummaries();
   }
 
-  // Local fallback
-  let list = getLocalSummaries();
-  const localVotes = getLocalRatings();
+  if (summaries.length === 0) {
+    summaries = getLocalSummaries();
+  }
+
+  let list = [...summaries];
 
   if (params.topicId) {
     list = list.filter((s) => s.topic_id === params.topicId);
@@ -144,9 +101,9 @@ export async function fetchSummaries(params: {
   }
 
   if (params.sort === "newest") {
-    list = [...list].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   } else {
-    list = [...list].sort((a, b) => {
+    list.sort((a, b) => {
       if (b.average_score !== a.average_score) {
         return b.average_score - a.average_score;
       }
@@ -168,12 +125,14 @@ export async function submitSummary(data: {
   paper_note_image_url?: string | null;
 }): Promise<Summary> {
   const currentUserId = getOrCreateUserId();
+  const cleanHandle = (data.author_name || "learner").trim().replace(/^@/, "");
+
   const newSummary: Summary = {
     id: "sum_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36),
     topic_id: data.topic_id,
     topic_title: data.topic_title,
     author_id: currentUserId,
-    author_name: data.author_name || "curious_mind",
+    author_name: cleanHandle,
     content: data.content,
     paper_note_image_url: data.paper_note_image_url || null,
     average_score: 0,
@@ -182,45 +141,30 @@ export async function submitSummary(data: {
     user_rating: null,
   };
 
-  if (isSupabaseConfigured()) {
-    const supabase = createClient();
-    if (supabase) {
-      try {
-        const { data: inserted, error } = await supabase
-          .from("summaries")
-          .insert({
-            topic_id: data.topic_id.includes("-") ? data.topic_id : null,
-            topic_title: data.topic_title,
-            author_id: currentUserId,
-            author_name: data.author_name,
-            content: data.content,
-            paper_note_image_url: data.paper_note_image_url || null,
-            average_score: 0,
-            ratings_count: 0,
-          })
-          .select()
-          .single();
-
-        if (!error && inserted) {
-          // Increment completed counter on topics
-          if (data.topic_id.includes("-")) {
-            try {
-              await supabase.rpc("increment_topic_completed", { topic_uuid: data.topic_id });
-            } catch {
-              // ignore if RPC not configured on remote
-            }
-          }
-          return {
-            ...inserted,
-            average_score: Number(inserted.average_score) || 0,
-            ratings_count: Number(inserted.ratings_count) || 0,
-            user_rating: null,
-          };
-        }
-      } catch (err) {
-        console.warn("Supabase insert summary failed, saving to local store:", err);
+  // 1. Post to cloud API
+  try {
+    const res = await fetch("/api/summaries", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topic_id: data.topic_id,
+        topic_title: data.topic_title,
+        author_name: cleanHandle,
+        content: data.content,
+        paper_note_image_url: data.paper_note_image_url || null,
+        author_id: currentUserId,
+      }),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json?.summary) {
+        const all = getLocalSummaries();
+        saveLocalSummaries([json.summary, ...all]);
+        return json.summary;
       }
     }
+  } catch (err) {
+    console.warn("Cloud summaries save failed, saving to local store:", err);
   }
 
   // Local fallback
@@ -240,75 +184,46 @@ export async function submitRating(summaryId: string, score: number): Promise<{
   }
 
   const voterId = getOrCreateUserId();
+  saveLocalRating(summaryId, score);
 
-  if (isSupabaseConfigured()) {
-    const supabase = createClient();
-    if (supabase) {
-      try {
-        // Upsert rating (replaces vote if already exists for this voter & summary)
-        const { error: ratingError } = await supabase
-          .from("ratings")
-          .upsert(
-            {
-              summary_id: summaryId,
-              voter_id: voterId,
-              score: score,
-            },
-            { onConflict: "summary_id, voter_id" }
-          );
-
-        if (!ratingError) {
-          // Read updated summary metrics (calculated by PostgreSQL trigger or manual fallback)
-          const { data: summaryData } = await supabase
-            .from("summaries")
-            .select("average_score, ratings_count")
-            .eq("id", summaryId)
-            .single();
-
-          if (summaryData) {
-            return {
-              average_score: Number(summaryData.average_score) || score,
-              ratings_count: Number(summaryData.ratings_count) || 1,
-              user_rating: score,
-            };
-          }
-        }
-      } catch (err) {
-        console.warn("Supabase submit rating error, falling back to local calculation:", err);
-      }
+  // 1. Post to cloud API
+  try {
+    const res = await fetch("/api/ratings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ summaryId, score, voterId }),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return {
+        average_score: json.average_score,
+        ratings_count: json.ratings_count,
+        user_rating: score,
+      };
     }
+  } catch (err) {
+    console.warn("Cloud rating submission failed, saving to local store:", err);
   }
 
-  // Local calculation & persistence
-  saveLocalRating(summaryId, score);
+  // Local fallback recalculation
   const all = getLocalSummaries();
-  let newAvg = score;
-  let newCount = 1;
-
-  const targetIndex = all.findIndex((s) => s.id === summaryId);
-  if (targetIndex !== -1) {
-    const item = all[targetIndex];
-    const prevScore = item.user_rating;
-    if (prevScore) {
-      // Voter is updating an existing vote
-      const totalPoints = item.average_score * item.ratings_count - prevScore + score;
-      newCount = item.ratings_count;
-      newAvg = Math.round((totalPoints / Math.max(1, newCount)) * 10) / 10;
-    } else {
-      // New vote
-      const totalPoints = item.average_score * item.ratings_count + score;
-      newCount = item.ratings_count + 1;
-      newAvg = Math.round((totalPoints / newCount) * 10) / 10;
-    }
-    item.average_score = newAvg;
-    item.ratings_count = newCount;
-    item.user_rating = score;
+  const target = all.find((s) => s.id === summaryId);
+  if (target) {
+    const newCount = target.ratings_count + 1;
+    const newAvg = (target.average_score * target.ratings_count + score) / newCount;
+    target.ratings_count = newCount;
+    target.average_score = Number(newAvg.toFixed(1));
     saveLocalSummaries(all);
+    return {
+      average_score: target.average_score,
+      ratings_count: target.ratings_count,
+      user_rating: score,
+    };
   }
 
   return {
-    average_score: newAvg,
-    ratings_count: newCount,
+    average_score: score,
+    ratings_count: 1,
     user_rating: score,
   };
 }

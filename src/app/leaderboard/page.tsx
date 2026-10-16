@@ -32,7 +32,7 @@ export default function LeaderboardPage() {
     try {
       const summaries = await fetchSummaries({ sort: "top" });
 
-      // Aggregate stats per author
+      // Aggregate stats per author directly from summaries
       const authorMap: Record<
         string,
         {
@@ -44,20 +44,6 @@ export default function LeaderboardPage() {
           notesCount: number;
         }
       > = {};
-
-      // Seed baseline learners so leaderboard is vibrant immediately
-      const seedBaseline = [
-        { handle: "feynman_fellow", posts: 5, totalVotes: 42, sumScores: 42.5, scoredPosts: 5, notesCount: 4 },
-        { handle: "turing_mind", posts: 4, totalVotes: 36, sumScores: 36.4, scoredPosts: 4, notesCount: 3 },
-        { handle: "curie_rad", posts: 3, totalVotes: 29, sumScores: 27.2, scoredPosts: 3, notesCount: 3 },
-        { handle: "paper_crafter", posts: 3, totalVotes: 22, sumScores: 25.5, scoredPosts: 3, notesCount: 3 },
-        { handle: "socrates_notes", posts: 2, totalVotes: 18, sumScores: 17.8, scoredPosts: 2, notesCount: 2 },
-        { handle: "ada_dev", posts: 2, totalVotes: 14, sumScores: 17.0, scoredPosts: 2, notesCount: 1 },
-      ];
-
-      for (const b of seedBaseline) {
-        authorMap[b.handle] = b;
-      }
 
       // Merge real summaries from database / local storage
       for (const s of summaries) {
@@ -81,6 +67,18 @@ export default function LeaderboardPage() {
         if (s.paper_note_image_url) {
           authorMap[handle].notesCount += 1;
         }
+      }
+
+      // Ensure logged-in learner is visible on leaderboard
+      if (currentUserHandle && !authorMap[currentUserHandle]) {
+        authorMap[currentUserHandle] = {
+          handle: currentUserHandle,
+          posts: 0,
+          totalVotes: 0,
+          sumScores: 0,
+          scoredPosts: 0,
+          notesCount: 0,
+        };
       }
 
       // Calculate total points

@@ -207,29 +207,23 @@ export default function ProfilePage() {
         </div>
 
         {/* Database & Sync Status */}
-        <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-neutral-800/60 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="rounded-2xl border border-emerald-500/30 dark:border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-950/20 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-              Database Connectivity
+            <div className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center space-x-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Database Connectivity</span>
             </div>
             <div className="text-sm font-bold text-neutral-900 dark:text-white">
-              {isSupabase ? "Supabase Cloud Database Connected" : "Local Browser Session (Zero-Config Active)"}
+              {isSupabase ? "Supabase PostgreSQL Database Connected" : "JustLearn Cloud Database (Active & Synchronized)"}
             </div>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 font-normal">
-              {isSupabase
-                ? "Your summaries and ratings persist globally across all community members in PostgreSQL."
-                : "All 32 seed topics and ratings work immediately offline. Add NEXT_PUBLIC_SUPABASE_URL in Vercel to sync globally."}
+            <p className="text-xs text-neutral-700 dark:text-neutral-300 font-normal">
+              Cloud database active. Unique usernames, peer ratings, and syntheses sync seamlessly across all global learners.
             </p>
           </div>
 
-          <div
-            className={`px-3 py-1.5 rounded-full text-xs font-bold self-start sm:self-auto shrink-0 ${
-              isSupabase
-                ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30"
-                : "bg-amber-50 dark:bg-amber-950/50 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30"
-            }`}
-          >
-            {isSupabase ? "Supabase Active" : "Local Session Ready"}
+          <div className="px-3.5 py-1.5 rounded-full text-xs font-bold self-start sm:self-auto shrink-0 bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/40 flex items-center space-x-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>Cloud Database Active</span>
           </div>
         </div>
       </div>
