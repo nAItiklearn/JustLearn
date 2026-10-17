@@ -111,10 +111,15 @@ export async function fetchSummaries(params: {
     });
   }
 
-  return list.map((item) => ({
-    ...item,
-    user_rating: localVotes[item.id] || null,
-  }));
+  const currentUserId = typeof window !== "undefined" ? getOrCreateUserId() : "";
+  return list.map((item) => {
+    const myFeedback = item.feedback_items?.find((fb) => fb.voter_id === currentUserId);
+    return {
+      ...item,
+      user_rating: myFeedback?.overall || localVotes[item.id] || null,
+      user_feedback: myFeedback || null,
+    };
+  });
 }
 
 export async function submitSummary(data: {
@@ -162,8 +167,16 @@ export async function submitSummary(data: {
         saveLocalSummaries([json.summary, ...all]);
         return json.summary;
       }
+    } else {
+      const errorJson = await res.json().catch(() => null);
+      if (errorJson?.error) {
+        throw new Error(errorJson.error);
+      }
     }
   } catch (err) {
+    if (err instanceof Error && err.message) {
+      throw err;
+    }
     console.warn("Cloud summaries save failed, saving to local store:", err);
   }
 
@@ -174,40 +187,81 @@ export async function submitSummary(data: {
   return newSummary;
 }
 
-export async function submitRating(summaryId: string, score: number): Promise<{
+export interface SubmitRatingOptions {
+  summaryId: string;
+  score?: number;
+  accuracy?: number;
+  clarity?: number;
+  completeness?: number;
+  comment?: string;
+  isCorrection?: boolean;
+}
+
+export async function submitRating(
+  param1: string | SubmitRatingOptions,
+  param2?: number
+): Promise<{
   average_score: number;
   ratings_count: number;
+  accuracy_avg?: number;
+  clarity_avg?: number;
+  completeness_avg?: number;
   user_rating: number;
 }> {
-  if (score < 1 || score > 10 || !Number.isInteger(score)) {
-    throw new Error("Score must be an integer between 1 and 10.");
-  }
+  const options: SubmitRatingOptions =
+    typeof param1 === "string"
+      ? { summaryId: param1, score: param2 ?? 8 }
+      : param1;
 
+  const score = options.score ?? Math.round(((options.accuracy ?? 8) + (options.clarity ?? 8) + (options.completeness ?? 8)) / 3);
   const voterId = getOrCreateUserId();
-  saveLocalRating(summaryId, score);
+  const voterName = (typeof window !== "undefined" ? localStorage.getItem("justlearn_user_name") : null) || "peer_learner";
+
+  saveLocalRating(options.summaryId, score);
 
   // 1. Post to cloud API
   try {
     const res = await fetch("/api/ratings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ summaryId, score, voterId }),
+      body: JSON.stringify({
+        summaryId: options.summaryId,
+        score,
+        accuracy: options.accuracy,
+        clarity: options.clarity,
+        completeness: options.completeness,
+        comment: options.comment,
+        is_correction: options.isCorrection,
+        voterId,
+        voterName,
+      }),
     });
     if (res.ok) {
       const json = await res.json();
       return {
         average_score: json.average_score,
         ratings_count: json.ratings_count,
-        user_rating: score,
+        accuracy_avg: json.accuracy_avg,
+        clarity_avg: json.clarity_avg,
+        completeness_avg: json.completeness_avg,
+        user_rating: json.user_rating || score,
       };
+    } else {
+      const errorJson = await res.json().catch(() => null);
+      if (errorJson?.error) {
+        throw new Error(errorJson.error);
+      }
     }
   } catch (err) {
+    if (err instanceof Error && err.message) {
+      throw err;
+    }
     console.warn("Cloud rating submission failed, saving to local store:", err);
   }
 
   // Local fallback recalculation
   const all = getLocalSummaries();
-  const target = all.find((s) => s.id === summaryId);
+  const target = all.find((s) => s.id === options.summaryId);
   if (target) {
     const newCount = target.ratings_count + 1;
     const newAvg = (target.average_score * target.ratings_count + score) / newCount;

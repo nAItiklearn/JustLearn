@@ -268,6 +268,36 @@ export const SEED_TOPICS: Topic[] = [
   },
 ];
 
+export function getTopicLearningObjective(topic: Topic): string {
+  if (topic.learning_objective) return topic.learning_objective;
+  switch (topic.difficulty) {
+    case "Easy":
+      return `Explain the core intuitive mechanism of "${topic.title}" using a concrete real-world analogy that anyone can visualize in under 2 minutes.`;
+    case "Hard":
+      return `Identify the exact mathematical, physical, or logical contradiction in "${topic.title}", and articulate why naive intuitive solutions fail.`;
+    case "Medium":
+    default:
+      return `Explain the causal chain behind "${topic.title}", how it was discovered or proven, and what it teaches us about underlying physical or mental laws.`;
+  }
+}
+
+export function getTopicStartingResource(topic: Topic): { title: string; url: string; domain: string; summary: string } {
+  if (topic.starting_resource) return topic.starting_resource;
+  return {
+    title: `${topic.title} — Verified Academic & Historic Primer`,
+    url: `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(topic.title)}`,
+    domain: "wikipedia.org",
+    summary: `Structured encyclopedic breakdown focusing on discovered mechanisms, seminal experiments, and primary sources.`,
+  };
+}
+
+export function getTopicDuration(topic: Topic): number {
+  if (topic.duration_minutes) return topic.duration_minutes;
+  if (topic.difficulty === "Easy") return 5;
+  if (topic.difficulty === "Hard") return 15;
+  return 10;
+}
+
 export const INITIAL_COMMUNITY_SUMMARIES: Summary[] = [
   {
     id: "sum-demo-01",
@@ -279,6 +309,36 @@ export const INITIAL_COMMUNITY_SUMMARIES: Summary[] = [
     paper_note_image_url: "/images/paper_notes_reference.png",
     average_score: 9.7,
     ratings_count: 36,
+    accuracy_avg: 9.8,
+    clarity_avg: 9.7,
+    completeness_avg: 9.6,
+    voter_ids: ["voter-alpha", "voter-beta", "voter-gamma"],
+    feedback_items: [
+      {
+        id: "fb-demo-01",
+        voter_id: "voter-alpha",
+        voter_name: "curie_quantum",
+        accuracy: 10,
+        clarity: 10,
+        completeness: 9,
+        overall: 9.7,
+        comment: "Brilliant explanation of standing wave nodes. Clear analogy with Snell's law.",
+        is_correction: false,
+        created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
+      },
+      {
+        id: "fb-demo-02",
+        voter_id: "voter-beta",
+        voter_name: "maxwell_wave",
+        accuracy: 9,
+        clarity: 10,
+        completeness: 10,
+        overall: 9.7,
+        comment: "Factual note: in an ideal pure standing wave, net energy transport is zero across the nodes; the energy oscillates between kinetic and potential locally.",
+        is_correction: true,
+        created_at: new Date(Date.now() - 3600000 * 3).toISOString(),
+      }
+    ],
     created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
   },
   {
@@ -291,6 +351,24 @@ export const INITIAL_COMMUNITY_SUMMARIES: Summary[] = [
     paper_note_image_url: "/images/paper_notes_reference.png",
     average_score: 9.4,
     ratings_count: 28,
+    accuracy_avg: 9.6,
+    clarity_avg: 9.4,
+    completeness_avg: 9.2,
+    voter_ids: ["voter-delta", "voter-epsilon"],
+    feedback_items: [
+      {
+        id: "fb-demo-03",
+        voter_id: "voter-delta",
+        voter_name: "ada_lovelace",
+        accuracy: 10,
+        clarity: 9,
+        completeness: 9,
+        overall: 9.3,
+        comment: "The Opp(Opp) diagonal contradiction makes the proof immediately intuitive to non-computer scientists.",
+        is_correction: false,
+        created_at: new Date(Date.now() - 3600000 * 10).toISOString(),
+      }
+    ],
     created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
   }
 ];

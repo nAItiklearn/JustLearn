@@ -6,6 +6,7 @@ import { getUserHandle, getOrCreateUserId } from "@/lib/user";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { fetchSummaries } from "@/lib/data-service";
 import { Summary } from "@/types/database";
+import { calculateLearnerPoints } from "@/lib/scoring";
 import { ArrowUpRight, Lock, Trophy, Sparkles, BookOpen, Camera } from "lucide-react";
 
 export default function ProfilePage() {
@@ -40,19 +41,22 @@ export default function ProfilePage() {
     loadUserData();
   }, []);
 
-  // Compute live user stats
+  // Compute live user stats with anti-manipulation scoring
   const postsCount = userSummaries.length;
   const paperNotesCount = userSummaries.filter((s) => Boolean(s.paper_note_image_url)).length;
+  const totalVotesReceived = userSummaries.reduce((sum, s) => sum + (s.ratings_count || 0), 0);
   const scoredPosts = userSummaries.filter((s) => s.average_score > 0);
   const avgScore =
     scoredPosts.length > 0
       ? scoredPosts.reduce((acc, s) => acc + s.average_score, 0) / scoredPosts.length
       : 0;
 
-  // Points formula: 10 pts per synthesis + 25 pts per paper note + (average_score * 5)
-  const totalPoints = Math.round(
-    postsCount * 10 + paperNotesCount * 25 + avgScore * 5
-  );
+  const { totalPoints } = calculateLearnerPoints({
+    postsCount,
+    paperNotesCount,
+    totalVotesReceived,
+    averageScore: avgScore,
+  });
 
   return (
     <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-8 py-10 sm:py-16 space-y-8 sm:space-y-10 transition-colors">

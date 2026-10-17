@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { Summary } from "@/types/database";
+import { Summary, FeedbackItem } from "@/types/database";
 import { fetchSummaries, submitRating } from "@/lib/data-service";
 import { getOrCreateUserId } from "@/lib/user";
 import { RatingBar } from "@/components/RatingBar";
-import { ArrowUpRight, Search } from "lucide-react";
+import { ArrowUpRight, Search, MessageSquare, AlertTriangle, ChevronDown, ChevronUp, CheckCircle, ShieldCheck } from "lucide-react";
 
 const CATEGORIES = [
   "All",
@@ -44,6 +44,8 @@ export default function CommunityPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
+  const [feedbackAlert, setFeedbackAlert] = useState<string | null>(null);
 
   useEffect(() => {
     setCurrentUserId(getOrCreateUserId());
@@ -60,52 +62,41 @@ export default function CommunityPage() {
     }
   }, []);
 
-  const handleRate = async (summaryId: string, score: number) => {
-    // Optimistic UI update
-    setSummaries((prev) =>
-      prev.map((s) => {
-        if (s.id === summaryId) {
-          const prevVote = s.user_rating;
-          let newCount = s.ratings_count;
-          let newAvg = s.average_score;
+  const toggleComments = (id: string) => {
+    setExpandedComments((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
-          if (prevVote) {
-            const totalPoints = s.average_score * s.ratings_count - prevVote + score;
-            newAvg = Math.round((totalPoints / Math.max(1, newCount)) * 10) / 10;
-          } else {
-            const totalPoints = s.average_score * s.ratings_count + score;
-            newCount = s.ratings_count + 1;
-            newAvg = Math.round((totalPoints / newCount) * 10) / 10;
-          }
-
-          return {
-            ...s,
-            average_score: newAvg,
-            ratings_count: newCount,
-            user_rating: score,
-          };
-        }
-        return s;
-      })
-    );
-
+  const handleRate = async (
+    summaryId: string,
+    score: number,
+    options?: {
+      accuracy: number;
+      clarity: number;
+      completeness: number;
+      comment?: string;
+      isCorrection?: boolean;
+    }
+  ) => {
+    setFeedbackAlert(null);
     try {
-      const res = await submitRating(summaryId, score);
-      setSummaries((prev) =>
-        prev.map((s) =>
-          s.id === summaryId
-            ? {
-                ...s,
-                average_score: res.average_score,
-                ratings_count: res.ratings_count,
-                user_rating: res.user_rating,
-              }
-            : s
-        )
-      );
-    } catch (err) {
-      console.error("Failed to rate summary:", err);
-      loadData();
+      const res = await submitRating({
+        summaryId,
+        score,
+        accuracy: options?.accuracy,
+        clarity: options?.clarity,
+        completeness: options?.completeness,
+        comment: options?.comment,
+        isCorrection: options?.isCorrection,
+      });
+
+      // Reload fresh data to sync feedback items & voters globally
+      await loadData();
+      setFeedbackAlert("Review submitted successfully! Thank you for constructive peer grading.");
+      setTimeout(() => setFeedbackAlert(null), 4000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to submit rating";
+      setFeedbackAlert(msg);
+      setTimeout(() => setFeedbackAlert(null), 5000);
     }
   };
 
@@ -229,6 +220,22 @@ export default function CommunityPage() {
         </div>
       </div>
 
+      {/* Feedback Alert Notice */}
+      {feedbackAlert && (
+        <div className="rounded-2xl border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-950/40 p-4 text-xs font-medium text-amber-900 dark:text-amber-200 flex items-center justify-between animate-in fade-in">
+          <div className="flex items-center space-x-2">
+            <ShieldCheck className="h-4 w-4 text-amber-600 shrink-0" />
+            <span>{feedbackAlert}</span>
+          </div>
+          <button
+            onClick={() => setFeedbackAlert(null)}
+            className="text-amber-800 dark:text-amber-400 hover:underline font-bold text-xs cursor-pointer"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Cards List */}
       <div className="space-y-6">
         {isLoading ? (
@@ -267,6 +274,21 @@ export default function CommunityPage() {
                 </div>
               </div>
 
+              {/* 3 Criteria Metrics Breakdown */}
+              {(summary.accuracy_avg || summary.average_score > 0) && (
+                <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-neutral-600 dark:text-neutral-400">
+                  <span className="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-md border border-neutral-200 dark:border-white/10">
+                    Accuracy: <strong className="text-neutral-900 dark:text-white">{summary.accuracy_avg || summary.average_score}</strong>
+                  </span>
+                  <span className="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-md border border-neutral-200 dark:border-white/10">
+                    Clarity: <strong className="text-neutral-900 dark:text-white">{summary.clarity_avg || summary.average_score}</strong>
+                  </span>
+                  <span className="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-md border border-neutral-200 dark:border-white/10">
+                    Completeness: <strong className="text-neutral-900 dark:text-white">{summary.completeness_avg || summary.average_score}</strong>
+                  </span>
+                </div>
+              )}
+
               <p className="text-sm sm:text-base leading-relaxed text-neutral-700 dark:text-neutral-300 font-light whitespace-pre-line">
                 {summary.content}
               </p>
@@ -296,13 +318,61 @@ export default function CommunityPage() {
                 </div>
               )}
 
+              {/* Expandable Constructive Critiques & Factual Corrections */}
+              {summary.feedback_items && summary.feedback_items.length > 0 && (
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={() => toggleComments(summary.id)}
+                    className="flex items-center space-x-1.5 text-xs text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white font-medium cursor-pointer"
+                  >
+                    <MessageSquare className="h-3.5 w-3.5 text-amber-500" />
+                    <span>
+                      {summary.feedback_items.length} Peer Critique{summary.feedback_items.length > 1 ? "s" : ""} & Correction{summary.feedback_items.length > 1 ? "s" : ""}
+                    </span>
+                    {expandedComments[summary.id] ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                  </button>
+
+                  {expandedComments[summary.id] && (
+                    <div className="mt-3 space-y-2.5 rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-50/70 dark:bg-neutral-800/40 p-4 animate-in fade-in duration-200">
+                      {summary.feedback_items.map((fb) => (
+                        <div key={fb.id} className="border-b border-neutral-200/60 dark:border-white/10 pb-2.5 last:border-b-0 last:pb-0 space-y-1">
+                          <div className="flex items-center justify-between text-[11px]">
+                            <div className="flex items-center space-x-1.5">
+                              <span className="font-semibold text-neutral-800 dark:text-neutral-200">@{fb.voter_name}</span>
+                              <span className="text-neutral-400">•</span>
+                              <span className="text-neutral-400 font-mono">{formatRelativeTime(fb.created_at)}</span>
+                              {fb.is_correction && (
+                                <span className="inline-flex items-center space-x-1 px-1.5 py-0.2 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold text-[10px] border border-amber-300 dark:border-amber-500/30">
+                                  <AlertTriangle className="h-2.5 w-2.5 text-amber-600" />
+                                  <span>Factual Correction</span>
+                                </span>
+                              )}
+                            </div>
+                            <span className="font-mono font-bold text-amber-700 dark:text-amber-400">
+                              {fb.overall} / 10
+                            </span>
+                          </div>
+                          {fb.comment && (
+                            <p className="text-xs text-neutral-700 dark:text-neutral-300 font-light leading-relaxed">
+                              {fb.comment}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="pt-2 border-t border-neutral-100 dark:border-white/10">
                 <RatingBar
                   summaryId={summary.id}
                   authorId={summary.author_id}
                   currentUserId={currentUserId}
                   userRating={summary.user_rating}
-                  onRate={(score) => handleRate(summary.id, score)}
+                  userFeedback={summary.user_feedback}
+                  onRate={(score, opts) => handleRate(summary.id, score, opts)}
                 />
               </div>
             </div>

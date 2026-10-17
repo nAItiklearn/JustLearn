@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { fetchSummaries } from "@/lib/data-service";
 import { getUserHandle } from "@/lib/user";
+import { calculateLearnerPoints } from "@/lib/scoring";
 import { ArrowUpRight, Trophy, Sparkles, Medal, Award, Flame } from "lucide-react";
 
 interface LeaderboardUser {
@@ -81,20 +82,20 @@ export default function LeaderboardPage() {
         };
       }
 
-      // Calculate total points
-      // Formula: (posts * 50) + (notesCount * 25) + (totalVotes * 10) + Math.round(avgScore * 10)
+      // Calculate total points with Anti-Manipulation Cognitive Scoring Engine
       const list: LeaderboardUser[] = Object.values(authorMap).map((a) => {
         const avg = a.scoredPosts > 0 ? a.sumScores / a.scoredPosts : 0;
-        const totalPoints =
-          a.posts * 50 +
-          a.notesCount * 25 +
-          a.totalVotes * 10 +
-          Math.round(avg * 10);
+        const scoring = calculateLearnerPoints({
+          postsCount: a.posts,
+          paperNotesCount: a.notesCount,
+          totalVotesReceived: a.totalVotes,
+          averageScore: avg,
+        });
 
         return {
           rank: 0,
           handle: a.handle,
-          totalPoints,
+          totalPoints: scoring.totalPoints,
           synthesesCount: a.posts,
           ratingsReceived: a.totalVotes,
           averageScore: Math.round(avg * 10) / 10,
@@ -133,7 +134,7 @@ export default function LeaderboardPage() {
             Leaderboard
           </h1>
           <p className="mt-2 text-sm sm:text-base font-light text-neutral-500 dark:text-neutral-400">
-            Ranked by cognitive synthesis points. The more you explore, post from memory, and earn peer marks, the higher you climb.
+            Ranked by cognitive synthesis points. Anti-manipulation engine rewards depth, peer accuracy, and physical paper notes over volume spam.
           </p>
         </div>
 
@@ -148,24 +149,33 @@ export default function LeaderboardPage() {
         </Link>
       </div>
 
-      {/* Point Rules Card */}
-      <div className="rounded-3xl border border-amber-300/80 dark:border-amber-500/30 bg-amber-50/70 dark:bg-amber-950/20 p-5 sm:p-6 text-xs text-neutral-700 dark:text-neutral-300">
-        <div className="flex items-center space-x-2 text-amber-800 dark:text-amber-300 font-bold uppercase tracking-wider mb-2">
+      {/* Point Rules Card - Anti-Manipulation System */}
+      <div className="rounded-3xl border border-amber-300/80 dark:border-amber-500/30 bg-amber-50/70 dark:bg-amber-950/20 p-5 sm:p-6 text-xs text-neutral-700 dark:text-neutral-300 space-y-2.5">
+        <div className="flex items-center space-x-2 text-amber-800 dark:text-amber-300 font-bold uppercase tracking-wider">
           <Sparkles className="h-4 w-4" />
-          <span>Point Breakdown</span>
+          <span>Anti-Manipulation Cognitive Scoring Engine</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 text-xs">
-          <div className="bg-white/80 dark:bg-neutral-900/60 p-2.5 rounded-xl border border-amber-200 dark:border-white/10">
-            <span className="text-amber-700 dark:text-amber-400 font-bold">+50 pts</span> per Published Synthesis
+        <p className="text-[11px] text-neutral-600 dark:text-neutral-400 font-normal">
+          Designed to prevent spam, reciprocated votes, and volume manipulation. All scores are verified on the server.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
+          <div className="bg-white/80 dark:bg-neutral-900/60 p-3 rounded-xl border border-amber-200 dark:border-white/10 space-y-1">
+            <div className="text-amber-700 dark:text-amber-400 font-bold">Diminishing Volume Curve</div>
+            <div className="text-[11px] text-neutral-500 dark:text-neutral-400">
+              Posts yield 25 → 15 → 8 → 3 pts with a hard ceiling. Spammed short posts cannot game rank.
+            </div>
           </div>
-          <div className="bg-white/80 dark:bg-neutral-900/60 p-2.5 rounded-xl border border-amber-200 dark:border-white/10">
-            <span className="text-amber-700 dark:text-amber-400 font-bold">+25 pts</span> per Paper Notes Photo
+          <div className="bg-white/80 dark:bg-neutral-900/60 p-3 rounded-xl border border-amber-200 dark:border-white/10 space-y-1">
+            <div className="text-amber-700 dark:text-amber-400 font-bold">Consensus Quality Multiplier</div>
+            <div className="text-[11px] text-neutral-500 dark:text-neutral-400">
+              High peer rating (accuracy, clarity, completeness) scales up to 180 pts once quorum is met.
+            </div>
           </div>
-          <div className="bg-white/80 dark:bg-neutral-900/60 p-2.5 rounded-xl border border-amber-200 dark:border-white/10">
-            <span className="text-amber-700 dark:text-amber-400 font-bold">+10 pts</span> per Peer Vote Received
-          </div>
-          <div className="bg-white/80 dark:bg-neutral-900/60 p-2.5 rounded-xl border border-amber-200 dark:border-white/10">
-            <span className="text-amber-700 dark:text-amber-400 font-bold">1–100 pts</span> Clarity Rating Bonus
+          <div className="bg-white/80 dark:bg-neutral-900/60 p-3 rounded-xl border border-amber-200 dark:border-white/10 space-y-1">
+            <div className="text-amber-700 dark:text-amber-400 font-bold">Physical Notes Verification</div>
+            <div className="text-[11px] text-neutral-500 dark:text-neutral-400">
+              +15 pts per verified handwritten journal note (capped to reward consistent offline work).
+            </div>
           </div>
         </div>
       </div>

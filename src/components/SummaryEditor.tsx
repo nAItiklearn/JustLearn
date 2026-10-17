@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { getUserHandle } from "@/lib/user";
-import { ArrowUpRight, Lock, Image as ImageIcon, X, Upload } from "lucide-react";
+import { ArrowUpRight, Lock, Image as ImageIcon, X, Upload, CheckCircle2 } from "lucide-react";
 
 interface SummaryEditorProps {
   isUnlocked: boolean;
@@ -28,6 +28,9 @@ export function SummaryEditor({
   const [paperNoteUrl, setPaperNoteUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [checkClarity, setCheckClarity] = useState(false);
+  const [checkMechanism, setCheckMechanism] = useState(false);
+  const [checkRecall, setCheckRecall] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -70,6 +73,11 @@ export function SummaryEditor({
       return;
     }
 
+    if (!checkClarity || !checkMechanism || !checkRecall) {
+      setErrorMessage("Please review and confirm all 3 Feynman Self-Check items below before publishing.");
+      return;
+    }
+
     const cleanHandle = authorName.trim() || getUserHandle() || "learner";
 
     try {
@@ -83,8 +91,9 @@ export function SummaryEditor({
       });
       setContent("");
       setPaperNoteUrl("");
-    } catch (err: any) {
-      setErrorMessage(err.message || "Failed to publish summary.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to publish summary.";
+      setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -202,8 +211,51 @@ export function SummaryEditor({
           )}
         </div>
 
+        {/* Post-Sprint Feynman Self-Check */}
+        <div className="rounded-2xl border border-amber-300/80 dark:border-amber-500/30 bg-amber-50/60 dark:bg-amber-950/20 p-4 sm:p-5 space-y-3">
+          <div className="flex items-center space-x-2 text-xs font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider">
+            <CheckCircle2 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <span>Feynman Synthesis Self-Check (Verify Before Publishing)</span>
+          </div>
+          <div className="space-y-2 text-xs text-neutral-800 dark:text-neutral-200">
+            <label className="flex items-start space-x-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={checkClarity}
+                onChange={(e) => setCheckClarity(e.target.checked)}
+                className="mt-0.5 rounded border-neutral-300 text-amber-500 focus:ring-amber-400 accent-amber-500"
+              />
+              <span>
+                <strong>Plain Clarity:</strong> Could a curious 12-year-old or layperson understand this explanation without getting confused by technical jargon?
+              </span>
+            </label>
+            <label className="flex items-start space-x-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={checkMechanism}
+                onChange={(e) => setCheckMechanism(e.target.checked)}
+                className="mt-0.5 rounded border-neutral-300 text-amber-500 focus:ring-amber-400 accent-amber-500"
+              />
+              <span>
+                <strong>Underlying Mechanism:</strong> Did I explain <em>why and how</em> this operates, rather than just repeating its name and claims?
+              </span>
+            </label>
+            <label className="flex items-start space-x-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={checkRecall}
+                onChange={(e) => setCheckRecall(e.target.checked)}
+                className="mt-0.5 rounded border-neutral-300 text-amber-500 focus:ring-amber-400 accent-amber-500"
+              />
+              <span>
+                <strong>Pure Memory & Notes:</strong> Written strictly from active recall and physical paper notes, without digital copy-pasting.
+              </span>
+            </label>
+          </div>
+        </div>
+
         {errorMessage && (
-          <p className="text-xs text-rose-500 font-light">{errorMessage}</p>
+          <p className="text-xs text-rose-500 font-medium">{errorMessage}</p>
         )}
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
