@@ -13,11 +13,11 @@ import type { ScanReport } from "@/lib/gmail";
 export async function GET(request: Request) {
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ mode: "none" as const, configured: Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) });
+    return NextResponse.json({ mode: "none" as const, configured: Boolean(process.env.GOOGLE_CLIENT_ID) });
   }
   const shelf = await loadShelf(session.shelfId);
   if (!shelf) {
-    return NextResponse.json({ mode: "none" as const, configured: Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) });
+    return NextResponse.json({ mode: "none" as const, configured: Boolean(process.env.GOOGLE_CLIENT_ID) });
   }
   shelf.settings = normalizeSettings(shelf.settings);
 
