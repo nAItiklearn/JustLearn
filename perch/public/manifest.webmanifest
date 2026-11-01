@@ -1,0 +1,14 @@
+{
+  "name": "Perch",
+  "short_name": "Perch",
+  "description": "Everything your inbox charges you for, on one perch.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fbfaf7",
+  "theme_color": "#2b6a4c",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

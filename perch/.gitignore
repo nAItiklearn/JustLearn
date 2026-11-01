@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+
+.env.local
+.env*.local
+
+# Perch runtime data (OAuth tokens + shelf state)
+.perch-data/
+
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+
+.vercel
+.env*
